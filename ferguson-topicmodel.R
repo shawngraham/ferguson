@@ -75,3 +75,6 @@ for(i in 1:10){
                   random.order=F))
 }
 
+
+## cluster based on shared words
+plot(hclust(dist(topic.words)), labels=topics.labels)
