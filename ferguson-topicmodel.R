@@ -16,7 +16,7 @@ require(mallet)
 #' import the documents from the folder
 #' each document is here its own text file
 
-documents <- mallet.read.dir("FergusontText") 
+documents <- mallet.read.dir("originaldocs/1000chunks/") 
 # windows users, remember: have the full path, ie "C:\\mallet-2.0.7\\sample-data\\web\\" and so on throughout this script
 
 mallet.instances <- mallet.import(documents$id, documents$text, "en.txt", token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
@@ -54,7 +54,7 @@ topic.words <- mallet.topic.words(topic.model, smoothed=T, normalized=T)  ##adap
 #' transpose and normalize the doc topics
 topic.docs <- t(doc.topics)
 topic.docs <- topic.docs / rowSums(topic.docs)
-write.csv(topic.docs, "topics-docs.csv" ) ## "C:\\Mallet-2.0.7\\topic-docs.csv"
+write.csv(topic.docs, "ferguson-topics-docs.csv" ) ## "C:\\Mallet-2.0.7\\topic-docs.csv"
 
 #' Get a vector containing short names for the topics
 topics.labels <- rep("", n.topics)
@@ -62,7 +62,7 @@ for (topic in 1:n.topics) topics.labels[topic] <- paste(mallet.top.words(topic.m
 
 #' have a look at keywords for each topic
 topics.labels
-write.csv(topics.labels, "topics-labels.csv") ## "C:\\Mallet-2.0.7\\topics-labels.csv")
+write.csv(topics.labels, "ferguson-topics-labels.csv") ## "C:\\Mallet-2.0.7\\topics-labels.csv")
 
 #' Or we could do word clouds of the topics
 library(wordcloud)
@@ -78,3 +78,22 @@ for(i in 1:10){
 
 ## cluster based on shared words
 plot(hclust(dist(topic.words)), labels=topics.labels)
+
+#create data.frame
+topic_docs <- data.frame(topic.docs)
+names(topic_docs) <- documents$id
+# Calculate similarity matrix
+library(cluster)
+topic_df_dist <- as.matrix(daisy(t(topic_docs), metric = "euclidean", stand = TRUE))
+# Change row values to zero if less than row minimum plus row standard deviation
+# keep only closely related documents and avoid a dense spagetti diagram
+# that's difficult to interpret (hat-tip: http://stackoverflow.com/a/16047196/1036500)
+topic_df_dist[ sweep(topic_df_dist, 1, (apply(topic_df_dist,1,min) + apply(topic_df_dist,1,sd) )) > 0 ] <- 0
+
+#' Use kmeans to identify groups of similar docs
+km <- kmeans(topic_df_dist, n.topics)
+# get names for each cluster
+simdocs <- vector("list", length = n.topics)
+for(i in 1:n.topics){
+  simdocs[[i]] <- names(km$cluster[km$cluster == i])
+}
