@@ -1,7 +1,7 @@
  After creating a single txt file of the grand jury documents, I chunked it into 1000 word pieces, edited the stopwords file to include the months of september, october, and november; also included trimmed the page header; and included the roman numerals from 1 to 22. I re-ran the topic model; below are the topics.
  
  I see that some words I thought I'd added to the stopword list made it through, so I need to check that over again.
- 
+  
  Topic 88 is chilling: ""shot i'm shooting he's car"   
  
  [1] "law force evidence whirley making"                "gun hand he's put facing"                        
