@@ -71,6 +71,12 @@ library(Hmisc)
 cor.matrix <- cor(topic.docs, use="complete.obs", method="pearson")
 write.csv(cor.matrix, "correlation-matrix.csv")
 ##one could then turn this into a network diagram, for instance, showing which bits of the testimony share similar patterns of discourse, which ones do not.
+##or try this:
+install.packages("corrgram")
+library(corrgram)
+corrgram(cor.matrix, order=NULL, lower.panel=panel.shade,
+          upper.panel=NULL, text.panel=panel.txt,
+          main="Correlated 1000 line chunks of grand jury testimony (unsorted)")
 
 #' Or we could do word clouds of the topics
 library(wordcloud)
