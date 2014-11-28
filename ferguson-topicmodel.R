@@ -54,7 +54,7 @@ topic.words <- mallet.topic.words(topic.model, smoothed=T, normalized=T)  ##adap
 #' transpose and normalize the doc topics
 topic.docs <- t(doc.topics)
 topic.docs <- topic.docs / rowSums(topic.docs)
-write.csv(topic.docs, "ferguson-topics-docs.csv" ) ## "C:\\Mallet-2.0.7\\topic-docs.csv"
+write.csv(topic.docs, "ferguson-topics-docs2.csv" ) ## "C:\\Mallet-2.0.7\\topic-docs.csv"
 
 #' Get a vector containing short names for the topics
 topics.labels <- rep("", n.topics)
@@ -62,7 +62,15 @@ for (topic in 1:n.topics) topics.labels[topic] <- paste(mallet.top.words(topic.m
 
 #' have a look at keywords for each topic
 topics.labels
-write.csv(topics.labels, "ferguson-topics-labels.csv") ## "C:\\Mallet-2.0.7\\topics-labels.csv")
+write.csv(topics.labels, "ferguson-topics-labels2.csv") ## "C:\\Mallet-2.0.7\\topics-labels.csv")
+
+#correlation matrix
+# Correlations with significance levels - each 1000 line chunk correlated against the others. Positive correlation - similar topics.
+install.packages("Hmisc")
+library(Hmisc)
+cor.matrix <- cor(topic.docs, use="complete.obs", method="pearson")
+write.csv(cor.matrix, "correlation-matrix.csv")
+##one could then turn this into a network diagram, for instance, showing which bits of the testimony share similar patterns of discourse, which ones do not.
 
 #' Or we could do word clouds of the topics
 library(wordcloud)
